@@ -1,0 +1,319 @@
+import React, { useState } from 'react';
+import { Star, Trophy, BookOpen, Dumbbell, Plus, Check, Users, Calendar } from 'lucide-react';
+
+const FamilySuccessApp = () => {
+  const [children, setChildren] = useState([
+    {
+      id: 1,
+      name: "Emma",
+      age: 10,
+      stars: 47,
+      todayTasks: 3,
+      completedTasks: 2,
+      avatar: "👧"
+    },
+    {
+      id: 2,
+      name: "Jake",
+      age: 8,
+      stars: 32,
+      todayTasks: 4,
+      completedTasks: 1,
+      avatar: "👦"
+    }
+  ]);
+
+  const [selectedChild, setSelectedChild] = useState(children[0]);
+  const [activeView, setActiveView] = useState('overview');
+
+  const [tasks, setTasks] = useState([
+    { id: 1, childId: 1, name: "Math Homework", type: "academic", subject: "Mathematics", completed: true, stars: 5, date: "Today" },
+    { id: 2, childId: 1, name: "20 Push-ups", type: "physical", completed: true, stars: 3, date: "Today" },
+    { id: 3, childId: 1, name: "Reading - 30 min", type: "academic", subject: "English", completed: false, stars: 4, date: "Today" },
+    { id: 4, childId: 2, name: "Science Project", type: "academic", subject: "Science", completed: true, stars: 8, date: "Today" },
+    { id: 5, childId: 2, name: "10 Pull-ups", type: "physical", completed: false, stars: 5, date: "Today" },
+    { id: 6, childId: 2, name: "History Essay", type: "academic", subject: "History", completed: false, stars: 6, date: "Today" },
+    { id: 7, childId: 2, name: "50 Sit-ups", type: "physical", completed: false, stars: 4, date: "Today" }
+  ]);
+
+  const [showAddTask, setShowAddTask] = useState(false);
+  const [newTask, setNewTask] = useState({ name: '', type: 'academic', subject: '', stars: 3 });
+
+  const completeTask = (taskId) => {
+    setTasks(tasks.map(task => 
+      task.id === taskId 
+        ? { ...task, completed: true }
+        : task
+    ));
+    
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      setChildren(children.map(child => 
+        child.id === task.childId 
+          ? { ...child, stars: child.stars + task.stars, completedTasks: child.completedTasks + 1 }
+          : child
+      ));
+    }
+  };
+
+  const addTask = () => {
+    if (newTask.name) {
+      const task = {
+        id: Date.now(),
+        childId: selectedChild.id,
+        ...newTask,
+        completed: false,
+        date: "Today"
+      };
+      setTasks([...tasks, task]);
+      setNewTask({ name: '', type: 'academic', subject: '', stars: 3 });
+      setShowAddTask(false);
+      
+      setChildren(children.map(child => 
+        child.id === selectedChild.id 
+          ? { ...child, todayTasks: child.todayTasks + 1 }
+          : child
+      ));
+    }
+  };
+
+  const childTasks = tasks.filter(task => task.childId === selectedChild.id);
+  const completedToday = childTasks.filter(task => task.completed).length;
+  const totalToday = childTasks.length;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800">FamilySuccess</h1>
+              <p className="text-gray-600">Parent Dashboard</p>
+            </div>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setActiveView('overview')}
+                className={`px-4 py-2 rounded-lg ${activeView === 'overview' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
+              >
+                Overview
+              </button>
+              <button
+                onClick={() => setActiveView('analytics')}
+                className={`px-4 py-2 rounded-lg ${activeView === 'analytics' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
+              >
+                Analytics
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Children Selector */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          {children.map(child => (
+            <div
+              key={child.id}
+              onClick={() => setSelectedChild(child)}
+              className={`bg-white rounded-xl shadow-lg p-6 cursor-pointer transition-all ${
+                selectedChild.id === child.id ? 'ring-4 ring-blue-300' : 'hover:shadow-xl'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <span className="text-3xl">{child.avatar}</span>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-800">{child.name}</h3>
+                    <p className="text-gray-600">Age {child.age}</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-1 bg-yellow-100 px-3 py-1 rounded-full">
+                  <Star className="w-5 h-5 text-yellow-500 fill-current" />
+                  <span className="font-bold text-yellow-700">{child.stars}</span>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">{child.completedTasks}</div>
+                  <div className="text-sm text-gray-600">Completed Today</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">{child.todayTasks}</div>
+                  <div className="text-sm text-gray-600">Total Tasks</div>
+                </div>
+              </div>
+              
+              <div className="mt-4">
+                <div className="flex justify-between text-sm text-gray-600 mb-1">
+                  <span>Progress</span>
+                  <span>{Math.round((child.completedTasks / child.todayTasks) * 100)}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="bg-gradient-to-r from-green-400 to-green-600 h-2 rounded-full transition-all duration-500"
+                    style={{ width: `${(child.completedTasks / child.todayTasks) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Selected Child Tasks */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-800">
+              {selectedChild.name}'s Tasks Today
+            </h2>
+            <button
+              onClick={() => setShowAddTask(true)}
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 flex items-center space-x-2"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Task</span>
+            </button>
+          </div>
+
+          {/* Add Task Modal */}
+          {showAddTask && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+                <h3 className="text-xl font-bold mb-4">Add New Task</h3>
+                
+                <div className="space-y-4">
+                  <input
+                    type="text"
+                    placeholder="Task name"
+                    value={newTask.name}
+                    onChange={(e) => setNewTask({...newTask, name: e.target.value})}
+                    className="w-full p-3 border border-gray-300 rounded-lg"
+                  />
+                  
+                  <select
+                    value={newTask.type}
+                    onChange={(e) => setNewTask({...newTask, type: e.target.value})}
+                    className="w-full p-3 border border-gray-300 rounded-lg"
+                  >
+                    <option value="academic">Academic</option>
+                    <option value="physical">Physical Training</option>
+                  </select>
+                  
+                  {newTask.type === 'academic' && (
+                    <input
+                      type="text"
+                      placeholder="Subject (Math, Science, etc.)"
+                      value={newTask.subject}
+                      onChange={(e) => setNewTask({...newTask, subject: e.target.value})}
+                      className="w-full p-3 border border-gray-300 rounded-lg"
+                    />
+                  )}
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Star Reward: {newTask.stars}
+                    </label>
+                    <input
+                      type="range"
+                      min="1"
+                      max="10"
+                      value={newTask.stars}
+                      onChange={(e) => setNewTask({...newTask, stars: parseInt(e.target.value)})}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex space-x-3 mt-6">
+                  <button
+                    onClick={addTask}
+                    className="flex-1 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
+                  >
+                    Add Task
+                  </button>
+                  <button
+                    onClick={() => setShowAddTask(false)}
+                    className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Tasks List */}
+          <div className="space-y-3">
+            {childTasks.map(task => (
+              <div
+                key={task.id}
+                className={`p-4 rounded-xl border-2 transition-all ${
+                  task.completed 
+                    ? 'bg-green-50 border-green-200' 
+                    : 'bg-gray-50 border-gray-200 hover:border-blue-300'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    {task.type === 'academic' ? (
+                      <BookOpen className={`w-6 h-6 ${task.completed ? 'text-green-600' : 'text-blue-600'}`} />
+                    ) : (
+                      <Dumbbell className={`w-6 h-6 ${task.completed ? 'text-green-600' : 'text-purple-600'}`} />
+                    )}
+                    <div>
+                      <h4 className={`font-semibold ${task.completed ? 'text-green-800 line-through' : 'text-gray-800'}`}>
+                        {task.name}
+                      </h4>
+                      {task.subject && (
+                        <p className="text-sm text-gray-600">{task.subject}</p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-1">
+                      <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                      <span className="text-yellow-700 font-semibold">{task.stars}</span>
+                    </div>
+                    
+                    {!task.completed && (
+                      <button
+                        onClick={() => completeTask(task.id)}
+                        className="bg-green-500 text-white p-2 rounded-full hover:bg-green-600 transition-colors"
+                      >
+                        <Check className="w-4 h-4" />
+                      </button>
+                    )}
+                    
+                    {task.completed && (
+                      <div className="bg-green-500 text-white p-2 rounded-full">
+                        <Trophy className="w-4 h-4" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Summary */}
+          <div className="mt-6 p-4 bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-gray-800">Today's Progress</h3>
+                <p className="text-gray-600">
+                  {completedToday} of {totalToday} tasks completed
+                </p>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold text-blue-600">{selectedChild.stars}</div>
+                <div className="text-sm text-gray-600">Total Stars</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default FamilySuccessApp;
