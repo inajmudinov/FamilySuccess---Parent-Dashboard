@@ -1,4 +1,3 @@
-ILHOM, [8/20/2025 9:18 PM]
 import React, { useState } from 'react';
 import { Star, Trophy, BookOpen, Dumbbell, Plus, Check, Users, Calendar } from 'lucide-react';
 
