@@ -108,7 +108,6 @@ const FamilySuccessApp = () => {
           </div>
         </div>
 
-ILHOM, [8/20/2025 9:18 PM]
 {/* Children Selector */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           {children.map(child => (
@@ -190,7 +189,6 @@ ILHOM, [8/20/2025 9:18 PM]
                     className="w-full p-3 border border-gray-300 rounded-lg"
                   />
 
-ILHOM, [8/20/2025 9:18 PM]
 <select
                     value={newTask.type}
                     onChange={(e) => setNewTask({...newTask, type: e.target.value})}
@@ -279,7 +277,6 @@ ILHOM, [8/20/2025 9:18 PM]
                     
                     {!task.completed && (
 
-ILHOM, [8/20/2025 9:18 PM]
 <button
                         onClick={() => completeTask(task.id)}
                         className="bg-green-500 text-white p-2 rounded-full hover:bg-green-600 transition-colors"
